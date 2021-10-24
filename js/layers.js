@@ -15,6 +15,7 @@ addLayer("d", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if (hasUpgrade('d', 13)) mult = mult.times(upgradeEffect('d', 13))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -37,6 +38,15 @@ addLayer("d", {
             cost: new Decimal(3),
             effect() {
                 return player[this.layer].points.add(1).pow(0.2)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        13: {
+            title: "It's boring. Do you have anything unique?",
+            description: "Points boost your dob point gain.",
+            cost: new Decimal(5),
+            effect() {
+                return player.points.add(1).pow(0.15)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
