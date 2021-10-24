@@ -1,6 +1,6 @@
 let modInfo = {
 	name: "The dob Tree",
-	id: "dobmod",
+	id: "DobMod",
 	author: "dob",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
@@ -41,8 +41,8 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
-
 	let gain = new Decimal(1)
+	if (hasUpgrade('d', 11)) gain = gain.times(2)
 	return gain
 }
 
