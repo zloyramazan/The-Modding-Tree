@@ -80,8 +80,9 @@ addLayer("d", {
         1: {
             requirementDescription: "10 Dob Points",
             effectDescription: 'Multiply point gain by the number of upgrades.',
-            done() { return player[this.layer].points.gte(10) }
+            done() { return player[this.layer].points.gte(10) },
+        },
         }
-    }
+    
 })
 
