@@ -22,6 +22,31 @@ addLayer("d", {
         return new Decimal(1)
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
+    microtabs: {
+        stuff: {
+            "Upgrades": {
+                content: [
+                    ["blank", "15px"],
+                    "upgrades",
+                ]
+            },
+            "Milestones": {
+                unlocked: () => hasUpgrade('d', 13),
+                content: [
+                    ["blank", "15px"],
+                    "milestones"
+                ]
+            },
+        },
+    },
+
+    tabFormat: [
+        "main-display",
+        "prestige-button",
+        ["blank", "25px"],
+        ["microtabs", "stuff"],
+        ["blank", "35px"],
+    ],
     hotkeys: [
         {key: "d", description: "D: Reset for dob points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -37,7 +62,7 @@ addLayer("d", {
             description: "Increase point gain based on dob points.",
             cost: new Decimal(3),
             effect() {
-                return player[this.layer].points.add(1).pow(0.2)
+                return player[this.layer].points.add(2).pow(0.2)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
@@ -54,8 +79,9 @@ addLayer("d", {
     milestones: {
         1: {
             requirementDescription: "10 Dob Points",
-            effectDescription: 'Multiply point gain by the number of milestones+1.',
+            effectDescription: 'Multiply point gain by the number of upgrades.',
             done() { return player[this.layer].points.gte(10) }
         }
     }
 })
+
