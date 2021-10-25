@@ -23,7 +23,7 @@ addLayer("d", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "d", description: "D: Reset for dob points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
     upgrades: {
@@ -51,4 +51,11 @@ addLayer("d", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
     },
+    milestones: {
+        1: {
+            requirementDescription: "10 Dob Points",
+            effectDescription: 'Multiply point gain by the number of milestones+1.',
+            done() { return player[this.layer].points.gte(10) }
+        }
+    }
 })
