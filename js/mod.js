@@ -3,7 +3,7 @@ let modInfo = {
 	id: "DobMod",
 	author: "dob",
 	pointsName: "points",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["dob layer.js", "tree.js", 'theories layer.js'],
 
 	discordName: "",
 	discordLink: "",
@@ -45,7 +45,7 @@ function getPointGen() {
 	if (hasUpgrade('d', 11)) gain = gain.times(2)
 	if (hasUpgrade('d', 12)) gain = gain.times(upgradeEffect('d', 12))
 	if (hasMilestone('d', 1)) gain = gain.times(player.d.upgrades.length)
-	if (hasUpgrade('d', 14)) mult = mult.times(upgradeEffect('d', 14))
+	if (hasUpgrade('d', 14)) mult = gain.times(upgradeEffect('d', 14))
 	return gain
 }
 
