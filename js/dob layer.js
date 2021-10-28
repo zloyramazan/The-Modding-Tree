@@ -17,6 +17,7 @@ addLayer("d", {
         mult = new Decimal(1)
         if (hasUpgrade('d', 13)) mult = mult.times(upgradeEffect('d', 13))
         if (hasUpgrade('d', 15)) mult = mult.times(upgradeEffect('d', 15))
+        if (hasMilestone('d', 2)) mult = mult.times(player.d.milestones.length)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -97,9 +98,14 @@ addLayer("d", {
     },
     milestones: {
         1: {
-            requirementDescription: "7 Dob Points",
+            requirementDescription: "7 Dob Points(1)",
             effectDescription: 'Multiply point gain by the number of upgrades.',
             done() { return player[this.layer].points.gte(7) },
+        },
+        2: {
+            requirementDescription: "500.000 Dob Points(2)",
+            effectDescription: 'Multiply dob point gain by the number of milestones.',
+            done() { return player[this.layer].points.gte(500000) },
         },
         }
     
