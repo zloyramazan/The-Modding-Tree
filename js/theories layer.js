@@ -21,6 +21,8 @@ addLayer("t", {
         return new Decimal(1)
     },
     effect() {
+        if (hasUpgrade('t', 12))
+        return player[this.layer].points.add(1).pow(2)
         return player[this.layer].points.add(1)
     },
     effectDescription() { return 'Multiplying your point gain by '+format(tmp.t.effect)+"x" },
@@ -34,8 +36,6 @@ addLayer("t", {
                     "upgrades",
                 ]
             },
-
-
             },
         },
     tabFormat: [
@@ -48,5 +48,22 @@ addLayer("t", {
     hotkeys: [
         {key: "t", description: "t: gain theorems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
+    upgrades: {
+        11: {
+            title: "Simple formula change.",
+            description: "Square the first dob milestone effect.",
+            cost: new Decimal(3),
+        },
+        12: {
+            title: "Simple formula change(2).",
+            description: "Square theorem effect.",
+            cost: new Decimal(4),
+        },
+        13: {
+            title: "Simple formula change(3).",
+            description: "^4 the first dob upgrade effect.",
+            cost: new Decimal(5),
+        },
+    }
 })
 
