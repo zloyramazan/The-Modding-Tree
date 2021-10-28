@@ -20,6 +20,9 @@ addLayer("t", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
+    effect() {
+        return player[this.layer].points.add(1)
+    },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
