@@ -59,9 +59,9 @@ addLayer("d", {
             cost: new Decimal(1),
         },
         12: {
-            title: "Seriously? I've seen this in every other shitty mod.",
+            title: "Seriously? I've seen this in every other mod.",
             description: "Increase point gain based on dob points.",
-            cost: new Decimal(3),
+            cost: new Decimal(2),
             effect() {
                 return player[this.layer].points.add(2).pow(0.2)
             },
@@ -70,7 +70,7 @@ addLayer("d", {
         13: {
             title: "It's boring. Do you have anything unique?",
             description: "Points boost your dob point gain.",
-            cost: new Decimal(5),
+            cost: new Decimal(3),
             effect() {
                 return player.points.add(1).pow(0.15)
             },
@@ -79,7 +79,7 @@ addLayer("d", {
         14: {
             title: "Still boring.",
             description: "Point gain increases based on points.",
-            cost: new Decimal(50),
+            cost: new Decimal(30),
             effect() {
                 return player.points.add(1).pow(0.20)
             },
@@ -90,16 +90,16 @@ addLayer("d", {
             description: "Increase dob point gain based on dob points and unlock new layer.",
             cost: new Decimal(100),
             effect() {
-                return player[this.layer].points.add(1).pow(0.05)
+                return player[this.layer].points.add(1).pow(0.07)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
     },
     milestones: {
         1: {
-            requirementDescription: "10 Dob Points",
+            requirementDescription: "7 Dob Points",
             effectDescription: 'Multiply point gain by the number of upgrades.',
-            done() { return player[this.layer].points.gte(10) },
+            done() { return player[this.layer].points.gte(7) },
         },
         }
     
