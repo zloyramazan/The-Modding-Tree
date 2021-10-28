@@ -23,6 +23,8 @@ addLayer("t", {
     effect() {
         return player[this.layer].points.add(1)
     },
+    effectDescription() { return 'Multiplying your point gain by '+format(tmp.t.effect)+"x" },
+    layerShown(){return hasUpgrade('d', 15)},   
     row: 0, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
@@ -46,6 +48,5 @@ addLayer("t", {
     hotkeys: [
         {key: "t", description: "t: gain theorems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true},
 })
 
