@@ -42,13 +42,13 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 	let gain = new Decimal(1)
-	gain = gain.times(tmp.t.effect)
+	gain = gain.times(tmp.f.effect)
 	if (hasUpgrade('d', 11)) gain = gain.times(2)
 	if (hasUpgrade('d', 12)) gain = gain.times(upgradeEffect('d', 12))
 	if (hasUpgrade('d', 14)) gain = gain.times(upgradeEffect('d', 14))
 	if (hasMilestone('d', 1)) gain = gain.times(player.d.upgrades.length)
-	if (hasUpgrade('t', 11)) gain = gain.times(player.d.upgrades.length)
-	if (hasUpgrade('t', 13)) gain = gain.times(8)
+	if (hasUpgrade('f', 11)) gain = gain.times(player.d.upgrades.length)
+	if (hasUpgrade('f', 13)) gain = gain.times(8)
 	return gain
 }
 
