@@ -15,6 +15,7 @@ addLayer("d", {
     exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        mult = mult.times(tmp.m.effect)
         if (hasUpgrade('d', 13)) mult = mult.times(upgradeEffect('d', 13))
         if (hasUpgrade('d', 15)) mult = mult.times(upgradeEffect('d', 15))
         if (hasMilestone('d', 2)) mult = mult.times(player.d.milestones.length)
@@ -53,6 +54,26 @@ addLayer("d", {
         {key: "d", description: "D: Reset for dob points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
+    automate() {
+        if (hasMilestone('m', 2)) {
+            buyUpgrade('d', 11)
+            buyUpgrade('d', 12)
+            buyUpgrade('d', 13)
+            buyUpgrade('d', 14)
+            buyUpgrade('d', 15)
+        }
+    },
+    passiveGeneration() {
+        if (hasMilestone("m", 2)) return 0.1
+        return 0
+    },
+    doReset(resettingLayer){
+        if (tmp[resettingLayer].row === this.row) return
+        let keep = []
+        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('milestones')
+        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
+        layerDataReset(this.layer, keep)
+    },
     upgrades: {
         11: {
             title: "You need to start somewhere.",
@@ -107,7 +128,11 @@ addLayer("d", {
             effectDescription: 'Multiply dob point gain by the number of milestones.',
             done() { return player[this.layer].points.gte(500000) },
         },
+        3: {
+            requirementDescription: "2.000.000 Dob Points(3)",
+            effectDescription: 'Unlock new layer.',
+            done() { return player[this.layer].points.gte(2e6) },
         }
-    
+    }
 })
 
