@@ -6,6 +6,7 @@ addLayer("f", {
         unlocked: true,
 		points: new Decimal(0),
     }},
+    resetsNothing: true,
     color: "#AC06E5",
     requires: new Decimal(150), // Can be a function that takes requirement increases into account
     resource: "formular", // Name of prestige currency
@@ -26,8 +27,9 @@ addLayer("f", {
         return player[this.layer].points.add(1)
     },
     effectDescription() { return 'Multiplying your point gain by ' + format(tmp.f.effect) + "x" },
-    layerShown(){return hasUpgrade('d', 15)},   
-    row: 0, // Row the layer is in on the tree (0 is the first row)
+    layerShown(){return hasUpgrade('d', 15) || hasMilestone('m', 1)},   
+    row: '0', // Row the layer is in on the tree (0 is the first row)
+    displayRow: 'side',
     microtabs: {
         stuff: {
             "Upgrades": {
@@ -48,6 +50,25 @@ addLayer("f", {
     hotkeys: [
         {key: "f", description: "f: gain formulars", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
+    canBuyMax() {
+        return hasMilestone("m", 1)
+    },
+    autoPrestige() {
+        return hasMilestone('m', 3)
+    },
+    automate() {
+        if (hasMilestone('m', 4)) {
+            buyUpgrade('f', 11)
+            buyUpgrade('f', 12)
+            buyUpgrade('f', 13)
+        }
+    },
+    doReset(resettingLayer){
+        if (tmp[resettingLayer].row === this.row) return
+        let keep = []
+        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
+        layerDataReset(this.layer, keep)
+    },
     upgrades: {
         11: {
             title: "Simple formula change.",
@@ -56,7 +77,7 @@ addLayer("f", {
         },
         12: {
             title: "Simple formula change(2).",
-            description: "Square theorem effect.",
+            description: "Square formular effect.",
             cost: new Decimal(4),
         },
         13: {
