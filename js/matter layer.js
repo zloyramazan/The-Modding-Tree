@@ -25,7 +25,7 @@ addLayer("m", {
     },
     effectDescription() { return 'Multiplying your dob point gain by ' + format(tmp.m.effect) + "x" },
     layerShown(){return hasMilestone('d', 3) || hasMilestone('m', 1)},  
-    row: '1', // Row the layer is in on the tree (0 is the first row)
+    row: 1, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
             "Upgrades": {
