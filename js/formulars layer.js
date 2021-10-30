@@ -1,7 +1,7 @@
 addLayer("f", {
     name: "formulars", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "F", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
@@ -28,7 +28,7 @@ addLayer("f", {
     },
     effectDescription() { return 'Multiplying your point gain by ' + format(tmp.f.effect) + "x" },
     layerShown(){return hasUpgrade('d', 15) || hasMilestone('m', 1)},   
-    row: '0', // Row the layer is in on the tree (0 is the first row)
+    row: 0, // Row the layer is in on the tree (0 is the first row)
     displayRow: 'side',
     microtabs: {
         stuff: {
