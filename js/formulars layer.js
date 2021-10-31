@@ -16,6 +16,7 @@ addLayer("f", {
     exponent: 1.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        mult = mult.times(buyableEffect('m', 22))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -57,6 +58,7 @@ addLayer("f", {
         return hasMilestone('m', 3)
     },
     automate() {
+        if (hasMilestone('m', 5)) return
         if (hasMilestone('m', 4)) {
             buyUpgrade('f', 11)
             buyUpgrade('f', 12)
@@ -85,6 +87,30 @@ addLayer("f", {
             description: "^4 the first dob upgrade effect.",
             cost: new Decimal(5),
         },
-    }
+        21: {
+            title: 'Another formula change(1)',
+            description: 'Make matter effect ^2 instead of ^1.5',
+            unlocked() {
+               return hasUpgrade('m', 13)
+            },
+            cost: new Decimal(10),
+        },
+        22: {
+            title: 'Another formula change(2)',
+            description: 'Increase first matter upgrade effect to 1000%',
+            unlocked() {
+                return hasUpgrade('m', 13)
+             },
+            cost: new Decimal(11),
+        },
+        23: {
+            title: 'Another formula change(3)',
+            description: 'Change matter gain formula(+) but softcap its effect again',
+            unlocked() {
+                return hasUpgrade('m', 13)
+            },
+            cost: new Decimal(22),
+        },
+    },
 })
 
