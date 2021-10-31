@@ -12,13 +12,17 @@ addLayer("d", {
     baseResource: "points", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.5, // Prestige currency exponent
+    exponent() {
+        if (hasUpgrade('d', 21)) return exponent = 0.3
+        return exponent = 0.5
+    }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         mult = mult.times(tmp.m.effect)
         if (hasUpgrade('d', 13)) mult = mult.times(upgradeEffect('d', 13))
         if (hasUpgrade('d', 15)) mult = mult.times(upgradeEffect('d', 15))
         if (hasMilestone('d', 2)) mult = mult.times(player.d.milestones.length)
+        mult = mult.times(buyableEffect('m', 12))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -37,7 +41,7 @@ addLayer("d", {
                 unlocked: () => hasUpgrade('d', 13),
                 content: [
                     ["blank", "15px"],
-                    "milestones"
+                    "milestones",
                 ]
             },
         },
@@ -55,6 +59,7 @@ addLayer("d", {
     ],
     layerShown(){return true},
     automate() {
+        if (hasMilestone('m', 5)) return
         if (hasMilestone('m', 2)) {
             buyUpgrade('d', 11)
             buyUpgrade('d', 12)
@@ -64,6 +69,8 @@ addLayer("d", {
         }
     },
     passiveGeneration() {
+        if (hasUpgrade("f", 22)) return 10
+        if (hasUpgrade("m", 11)) return 1
         if (hasMilestone("m", 2)) return 0.1
         return 0
     },
@@ -73,6 +80,7 @@ addLayer("d", {
         if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('milestones')
         if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
         layerDataReset(this.layer, keep)
+        if (resettingLayer == "m" && hasUpgrade('m', 12)) addPoints('d', 1e6)
     },
     upgrades: {
         11: {
@@ -115,6 +123,46 @@ addLayer("d", {
                 return player[this.layer].points.add(1).pow(0.07)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        21: {
+            title: "I need to stop you, just a bit.",
+            description: "Increase point gain but nerf dob point gain formula.",
+            unlocked() {
+                return hasUpgrade('m', 15)
+            },
+            cost: new Decimal(1e19),
+        },
+        22: {
+            title: "Softcaps are appearing.",
+            description: "Multiply point gain by 10.",
+            unlocked() {
+                return hasUpgrade('d', 21)
+            },
+            cost: new Decimal(1e21),
+        },
+        23: {
+            title: "Why are these upgrades so boring? You'll get it in a minute",
+            description: "Multiply point gain by 20.",
+            unlocked() {
+                return hasUpgrade('d', 21)
+            },
+            cost: new Decimal(1e22),
+        },
+        24: {
+            title: "Ok the last boring upgrade.",
+            description: "Multiply point gain by 30.",
+            unlocked() {
+                return hasUpgrade('d', 21)
+            },
+            cost: new Decimal(3e23),
+        },
+        25: {
+            title: "Buyables??.",
+            description: "Unlock matter buyables.",
+            unlocked() {
+                return hasUpgrade('d', 21)
+            },
+            cost: new Decimal(1e25),
         },
     },
     milestones: {
