@@ -12,19 +12,32 @@ addLayer("m", {
     baseResource: "dob points", // Name of resource prestige is based on
     baseAmount() {return player.d.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.2, // Prestige currency exponent
+    exponent() {
+        if (hasUpgrade('f', 23)) return exponent = 0.5
+        return exponent = 0.2
+    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if (hasUpgrade ('m', 14)) mult = mult.times (upgradeEffect ('m', 14))
+        if (hasUpgrade ('m', 21)) mult = mult.times (100)
+        if (hasUpgrade ('m', 22)) mult = mult.times (100)
+        if (hasUpgrade ('m', 23)) mult = mult.times (upgradeEffect ('m', 23))
+        if (hasUpgrade ('m', 24)) mult = mult.times (upgradeEffect ('m', 24))
+        mult = mult.times(buyableEffect('m', 21))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
     effect() {
-        return player.m.best.add(1).pow(1.5)
+        if (hasUpgrade ('f', 21))
+        effect = player.m.best.add(1).pow(2)
+        else effect = player.m.best.add(1).pow(1.5)
+        let softcappedEffect =  softcap (effect, new Decimal(1e6), 0.5)
+        return softcap (softcappedEffect, new Decimal(1e9), 0.1)
     },
-    effectDescription() { return 'Multiplying your dob point gain by ' + format(tmp.m.effect) + "x" },
-    layerShown(){return hasMilestone('d', 3) || hasMilestone('m', 1)},  
+    effectDescription() { return 'Multiplying your dob point gain by ' + format (tmp.m.effect) + "x" },
+    layerShown() {return hasMilestone ('d', 3) || hasMilestone ('m', 1)},  
     row: 1, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
@@ -38,6 +51,13 @@ addLayer("m", {
                 content: [
                     ["blank", "15px"],
                     "milestones"
+                ]
+            },
+            "Buyables": {
+                unlocked: () => hasUpgrade ('d', 25),
+                content: [
+                    ["blank", "15px"],
+                    "buyables",
                 ]
             },
         },
@@ -59,10 +79,81 @@ addLayer("m", {
             cost: new Decimal(10),
         },
         12: {
-            title: "not yet implemented.",
-            description: "not yet implemented.",
+            title: "And even faster.",
+            description: "Start every matter reset with 1e6 dob points.",
             cost: new Decimal(20),
         },
+        13: {
+            title: "Now you need to wait a bit.",
+            description: "Point gain ^(1+matter upgrade amount/100) and unlock new formular upgrades.",
+            effect() {
+                return new Decimal.add(1, player.m.upgrades.length/100)
+            },
+            effectDisplay() { return "^" + format(upgradeEffect(this.layer, this.id)) },
+            cost: new Decimal(25),
+        },
+        14: {
+            title: "Another boost, but now its flat.",
+            description: "Multiply matter gain based on amount of matter.",
+            effect() {
+                return player[this.layer].points.add(1).pow(0.1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, 
+            cost: new Decimal(150),
+        },
+        15: {
+            title: "New upgrades, old layers.",
+            description: "Unlock new upgrades in dob layer.",
+            cost: new Decimal(1500),
+        },
+        21: {
+            title: "It will help you get all buyables maxed, I promise(1).",
+            description: "Gain 100x more matter.",
+            cost: new Decimal(1e25),
+            unlocked() {
+                return hasUpgrade('f', 23)
+            },
+        },
+        22: {
+            title: "It will help you get all buyables maxed, I promise(2).",
+            description: "Gain 100x more matter(2).",
+            cost: new Decimal(5e27),
+            unlocked() {
+                return hasUpgrade('f', 23)
+            },
+        },
+        23: {
+            title: "It will help you get all buyables maxed, I promise(lol another time).",
+            description: "Gain more matter based on points.",
+            cost: new Decimal(3e31),
+            effect() {
+                return player.points.add(1).pow(0.1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasUpgrade('f', 23)
+            },
+        },
+        24: {
+            title: "It will help you get all buyables maxed, I promise(sorry, its the last time).",
+            description: "Gain more matter based on formulars and decrease matter materialize buyable cost.",
+            cost: new Decimal(5e40),
+            effect() {
+                return player.f.points.add(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            unlocked() {
+                return hasUpgrade('f', 23)
+            },
+        },
+        25: {
+            title: "Lets end this boring layer.",
+            description: "Unlock new antimatter layer.",
+            cost: new Decimal(1e44),
+            unlocked() {
+                return (hasUpgrade('m', 24))
+            },
+        }
     },
     milestones: {
         1: {
@@ -91,5 +182,230 @@ addLayer("m", {
             done() { return player[this.layer].points.gte(9) },
         },
     },
+    buyables: {
+        11: {
+            cost(x) { 
+                return new Decimal(1e5).pow(1.1).pow(x).pow(0.5).add(1e5).times(x).add(1e5)
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            }
+        },
+        12: {
+            cost(x) { 
+                return new Decimal(1.5e5).pow(1.5).pow(x).pow(0.5).add(1.5e5).times(x).add(1.5e5)
+            },
+            title: 'Materialize dob points',
+            display() {
+                return "Boost dob point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(5).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            }
+        },
+        13: {
+            cost(x) { 
+                return new Decimal(1e5).mul(x) 
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            },
+            unlocked() {
+                return false
+            },
+        },
+        21: {
+            cost(x) { 
+                if (hasUpgrade('m', 24)) return new Decimal(5e5).pow(2).pow(x).pow(0.5).add(5e5).times(x).add(5e5).divide(1e12)
+                return new Decimal(5e5).pow(2).pow(x).pow(0.5).add(5e5).times(x).add(5e5)
+            },
+            title: 'Materialize matter',
+            display() {
+                return "Boost matter gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(2.5).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            }
+        },
+        22: {
+            cost(x) { 
+                return new Decimal(1e6).pow(1.1).times(x).add(1e6)
+            },
+            title: 'Materialize formulars',
+            display() {
+                return "Boost formular gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(2).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            }
+        },
+        23: {
+            cost(x) { 
+                return new Decimal(1e5).mul(x) 
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            },
+            unlocked() {
+                return false
+            },
+        },
+        31: {
+            cost(x) { 
+                return new Decimal(1e5).mul(x) 
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            },
+            unlocked() {
+                return false
+            },
+        },
+        32: {
+            cost(x) { 
+                return new Decimal(1e5).mul(x) 
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            },
+            unlocked() {
+                return false
+            },
+        },
+        33: {
+            cost(x) { 
+                return new Decimal(1e5).mul(x) 
+            },
+            title: 'Materialize points',
+            display() {
+                return "Boost point gain" + '.<br>Amount: ' +
+                format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
+                format(this.effect()) + '.<br>Costs: ' + 
+                format(this.cost()) + ' matter.'
+            },
+            effect() {
+                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            purchaseLimit() {
+                return 10
+            },
+            unlocked() {
+                return false
+            },
+        },
+    }
 })
 
