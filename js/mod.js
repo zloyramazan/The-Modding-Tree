@@ -3,7 +3,7 @@ let modInfo = {
 	id: "DobMod",
 	author: "dob",
 	pointsName: "points",
-	modFiles: ["dob layer.js", "tree.js", 'formulars layer.js', 'matter layer.js'],
+	modFiles: ["dob layer.js", "tree.js", 'formulars layer.js', 'matter layer.js', 'antimatter layer.js'],
 
 	discordName: "",
 	discordLink: "",
@@ -43,6 +43,7 @@ function getPointGen() {
 		return new Decimal(0)
 	let gain = new Decimal(1)
 	gain = gain.times(tmp.f.effect)
+	gain = gain.times(tmp.a.effect)
 	if (hasUpgrade('d', 11)) gain = gain.times(2)
 	if (hasUpgrade('d', 12)) gain = gain.times(upgradeEffect('d', 12))
 	if (hasUpgrade('d', 14)) gain = gain.times(upgradeEffect('d', 14))
@@ -55,6 +56,8 @@ function getPointGen() {
 	if (hasUpgrade('d', 23)) gain = gain.times(20)
 	if (hasUpgrade('d', 24)) gain = gain.times(30)
 	gain = gain.times(buyableEffect('m', 11))
+	if (hasUpgrade('d', 31)) gain = gain.times(1e10)
+	if (hasUpgrade('a', 12)) gain = gain.pow(upgradeEffect('a', 12))
 	return gain
 }
 
