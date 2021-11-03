@@ -9,11 +9,14 @@ addLayer("f", {
     resetsNothing: true,
     color: "#AC06E5",
     requires: new Decimal(150), // Can be a function that takes requirement increases into account
-    resource: "formular", // Name of prestige currency
+    resource: "formulars", // Name of prestige currency
     baseResource: "dob points", // Name of resource prestige is based on
     baseAmount() {return player.d.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 1.5, // Prestige currency exponent
+    exponent() {
+        if (hasUpgrade('a', 14)) return exponent = 1
+        return exponent = 1.5
+    }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         mult = mult.times(buyableEffect('m', 22))
@@ -28,7 +31,7 @@ addLayer("f", {
         return player[this.layer].points.add(1)
     },
     effectDescription() { return 'Multiplying your point gain by ' + format(tmp.f.effect) + "x" },
-    layerShown(){return hasUpgrade('d', 15) || hasMilestone('m', 1)},   
+    layerShown(){return hasUpgrade('d', 15) || hasMilestone('m', 1) || hasMilestone ('a', 1)},   
     row: 0, // Row the layer is in on the tree (0 is the first row)
     displayRow: 'side',
     microtabs: {
@@ -69,6 +72,7 @@ addLayer("f", {
         if (tmp[resettingLayer].row === this.row) return
         let keep = []
         if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
+        if (resettingLayer == "a" && hasMilestone('a', 5)) keep.push('upgrades')
         layerDataReset(this.layer, keep)
     },
     upgrades: {
@@ -110,6 +114,30 @@ addLayer("f", {
                 return hasUpgrade('m', 13)
             },
             cost: new Decimal(22),
+        },
+        31: {
+            title: 'Powerful formula change(1)',
+            description: 'Make antimatter effect ^5 instead of ^1.5(its softcapped already but that will help)',
+            unlocked() {
+               return hasUpgrade('d', 35)
+            },
+            cost: new Decimal(505),
+        },
+        32: {
+            title: 'Powerful formula change(2)',
+            description: 'Increase matter upgrade 4 effect(yes you need to find it)',
+            unlocked() {
+                return hasUpgrade('d', 35)
+             },
+            cost: new Decimal(530),
+        },
+        33: {
+            title: 'Powerful formula change(3)',
+            description: 'Increase matter upgrade 8 effect and unlock antimatter buyables(yay!!!)',
+            unlocked() {
+                return hasUpgrade('d', 35)
+            },
+            cost: new Decimal(571),
         },
     },
 })
