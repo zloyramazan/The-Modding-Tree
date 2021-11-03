@@ -18,12 +18,14 @@ addLayer("m", {
     },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        mult = mult.times(tmp.a.effect)
         if (hasUpgrade ('m', 14)) mult = mult.times (upgradeEffect ('m', 14))
         if (hasUpgrade ('m', 21)) mult = mult.times (100)
         if (hasUpgrade ('m', 22)) mult = mult.times (100)
         if (hasUpgrade ('m', 23)) mult = mult.times (upgradeEffect ('m', 23))
         if (hasUpgrade ('m', 24)) mult = mult.times (upgradeEffect ('m', 24))
         mult = mult.times(buyableEffect('m', 21))
+        if (hasUpgrade('d', 33)) mult = mult.times(1e10)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -37,7 +39,12 @@ addLayer("m", {
         return softcap (softcappedEffect, new Decimal(1e9), 0.1)
     },
     effectDescription() { return 'Multiplying your dob point gain by ' + format (tmp.m.effect) + "x" },
-    layerShown() {return hasMilestone ('d', 3) || hasMilestone ('m', 1)},  
+    layerShown() {return hasMilestone ('d', 3) || hasMilestone ('m', 1) || hasMilestone ('a', 1)},
+    passiveGeneration() {
+        if (hasMilestone("a", 3)) return 0.1
+        if (hasUpgrade("a", 11)) return 1
+        return 0
+    },  
     row: 1, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
@@ -54,7 +61,7 @@ addLayer("m", {
                 ]
             },
             "Buyables": {
-                unlocked: () => hasUpgrade ('d', 25),
+                unlocked: () => hasUpgrade ('d', 25) || hasMilestone ('a', 1),
                 content: [
                     ["blank", "15px"],
                     "buyables",
@@ -72,6 +79,14 @@ addLayer("m", {
     hotkeys: [
         {key: "m", description: "m: gain matter", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
+    doReset(resettingLayer){
+        if (tmp[resettingLayer].row === this.row && !tmp('a')) return
+        let keep = []
+        if (resettingLayer == "a" && hasMilestone('a', 2)) keep.push('milestones')
+        if (resettingLayer == "a" && hasMilestone('a', 5)) keep.push('buyables')
+        if (resettingLayer == "a" && hasMilestone('a', 6)) keep.push('upgrades')
+        layerDataReset(this.layer, keep)
+    },
     upgrades: {
         11: {
             title: "It will help you get back faster, I promise.",
@@ -96,6 +111,7 @@ addLayer("m", {
             title: "Another boost, but now its flat.",
             description: "Multiply matter gain based on amount of matter.",
             effect() {
+                if(hasUpgrade('f', 32 )) return player[this.layer].points.add(1).pow(0.3)
                 return player[this.layer].points.add(1).pow(0.1)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, 
@@ -127,6 +143,7 @@ addLayer("m", {
             description: "Gain more matter based on points.",
             cost: new Decimal(3e31),
             effect() {
+                if(hasUpgrade('f', 33 )) return player.points.add(1).pow(0.3)
                 return player.points.add(1).pow(0.1)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
@@ -195,11 +212,12 @@ addLayer("m", {
                 format(this.cost()) + ' matter.'
             },
             effect() {
+                if(hasUpgrade('a', 13)) return new Decimal(10).pow(getBuyableAmount(this.layer, this.id)).pow(2)
                 return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -218,11 +236,12 @@ addLayer("m", {
                 format(this.cost()) + ' matter.'
             },
             effect() {
+                if(hasUpgrade('a', 13)) new Decimal(5).pow(getBuyableAmount(this.layer, this.id)).pow(2)
                 return new Decimal(5).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -245,7 +264,7 @@ addLayer("m", {
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -268,11 +287,12 @@ addLayer("m", {
                 format(this.cost()) + ' matter.'
             },
             effect() {
+                if(hasUpgrade('a', 13)) return new Decimal(2.5).pow(getBuyableAmount(this.layer, this.id))
                 return new Decimal(2.5).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -291,11 +311,12 @@ addLayer("m", {
                 format(this.cost()) + ' matter.'
             },
             effect() {
-                return new Decimal(2).pow(getBuyableAmount(this.layer, this.id))
+                if(hasUpgrade('a', 13)) return new Decimal(2).pow(-getBuyableAmount(this.layer, this.id))
+                return new Decimal(2).pow(-getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -318,7 +339,7 @@ addLayer("m", {
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -344,7 +365,7 @@ addLayer("m", {
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -370,7 +391,7 @@ addLayer("m", {
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
@@ -396,7 +417,7 @@ addLayer("m", {
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                if(!hasMilestone('a',1)) player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             purchaseLimit() {
