@@ -32,7 +32,7 @@ addLayer("f", {
     },
     effectDescription() { return 'Multiplying your point gain by ' + format(tmp.f.effect) + "x" },
     layerShown(){return hasUpgrade('d', 15) || hasMilestone('m', 1) || hasMilestone ('a', 1)},   
-    row: 0, // Row the layer is in on the tree (0 is the first row)
+    row: 1, // Row the layer is in on the tree (0 is the first row)
     displayRow: 'side',
     microtabs: {
         stuff: {
