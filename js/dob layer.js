@@ -30,7 +30,7 @@ addLayer("d", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
-    row: 0, // Row the layer is in on the tree (0 is the first row)
+    row: 1, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
             "Upgrades": {
@@ -77,12 +77,12 @@ addLayer("d", {
         return 0
     },
     doReset(resettingLayer){
-        if (tmp[resettingLayer].row === this.row) return
+        if (tmp[resettingLayer].row == this.row) return
         let keep = []
-        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('milestones')
-        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
         if (resettingLayer == "a" && hasMilestone('a', 1)) keep.push('milestones')
         if (resettingLayer == "a" && hasMilestone('a', 3)) keep.push('upgrades')
+        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('milestones')
+        if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
         layerDataReset(this.layer, keep)
         if (resettingLayer == "m" && hasUpgrade('m', 12)) addPoints('d', 1e6)
     },
