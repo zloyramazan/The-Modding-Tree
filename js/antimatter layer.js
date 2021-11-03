@@ -31,8 +31,8 @@ addLayer("a", {
     },
     effectDescription() { return 'Multiplying your every currency gain by ' + format (tmp.a.effect) + "x" },
     layerShown() {return hasUpgrade ('m', 25) || hasMilestone ('a', 1)},
-    row: 2, // Row the layer is in on the tree (0 is the first row)
-    displayRow: '1',
+    row: 3, // Row the layer is in on the tree (0 is the first row)
+    displayRow: 2,
     microtabs: {
         stuff: {
             "Upgrades": {
