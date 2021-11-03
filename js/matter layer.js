@@ -45,7 +45,7 @@ addLayer("m", {
         if (hasUpgrade("a", 11)) return 1
         return 0
     },  
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 2, // Row the layer is in on the tree (0 is the first row)
     microtabs: {
         stuff: {
             "Upgrades": {
@@ -80,7 +80,7 @@ addLayer("m", {
         {key: "m", description: "m: gain matter", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     doReset(resettingLayer){
-        if (tmp[resettingLayer].row === this.row && !tmp('a')) return
+        if (tmp[resettingLayer].row === this.row) return
         let keep = []
         if (resettingLayer == "a" && hasMilestone('a', 2)) keep.push('milestones')
         if (resettingLayer == "a" && hasMilestone('a', 5)) keep.push('buyables')
