@@ -19,10 +19,12 @@ addLayer("d", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         mult = mult.times(tmp.m.effect)
+        mult = mult.times(tmp.a.effect)
         if (hasUpgrade('d', 13)) mult = mult.times(upgradeEffect('d', 13))
         if (hasUpgrade('d', 15)) mult = mult.times(upgradeEffect('d', 15))
         if (hasMilestone('d', 2)) mult = mult.times(player.d.milestones.length)
         mult = mult.times(buyableEffect('m', 12))
+        if (hasUpgrade('d', 32)) mult = mult.times(1e10)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -38,7 +40,7 @@ addLayer("d", {
                 ]
             },
             "Milestones": {
-                unlocked: () => hasUpgrade('d', 13),
+                unlocked: () => hasUpgrade('d', 13) || hasMilestone ('a', 1),
                 content: [
                     ["blank", "15px"],
                     "milestones",
@@ -79,6 +81,8 @@ addLayer("d", {
         let keep = []
         if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('milestones')
         if (resettingLayer == "m" && hasMilestone('m', 5)) keep.push('upgrades')
+        if (resettingLayer == "a" && hasMilestone('a', 1)) keep.push('milestones')
+        if (resettingLayer == "a" && hasMilestone('a', 3)) keep.push('upgrades')
         layerDataReset(this.layer, keep)
         if (resettingLayer == "m" && hasUpgrade('m', 12)) addPoints('d', 1e6)
     },
@@ -163,6 +167,46 @@ addLayer("d", {
                 return hasUpgrade('d', 21)
             },
             cost: new Decimal(1e25),
+        },
+        31: {
+            title: "I need to push you, just a bit.",
+            description: "Increase point gain by 1e10.",
+            unlocked() {
+                return hasUpgrade('a', 15)
+            },
+            cost: new Decimal(1e106),
+        },
+        32: {
+            title: "And push you more.",
+            description: "Multiply dob point gain by 1e10.",
+            unlocked() {
+                return hasUpgrade('a', 15)
+            },
+            cost: new Decimal(1e122),
+        },
+        33: {
+            title: "Pushes are quite big(not that one).",
+            description: "Multiply matter gain by 1e10.",
+            unlocked() {
+                return hasUpgrade('a', 15)
+            },
+            cost: new Decimal(1e144),
+        },
+        34: {
+            title: "Ok the last boring upgrade(yeah again).",
+            description: "Multiply antimatter gain by 1000.",
+            unlocked() {
+                return hasUpgrade('a', 15)
+            },
+            cost: new Decimal(1e148),
+        },
+        35: {
+            title: "And another row of upgrades.",
+            description: "Unlock new formular upgrades.",
+            unlocked() {
+                return hasUpgrade('a', 15)
+            },
+            cost: new Decimal(1e150),
         },
     },
     milestones: {
