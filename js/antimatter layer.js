@@ -18,6 +18,10 @@ addLayer("a", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade('d', 34)) mult = mult.times(1e3)
+        mult = mult.times(buyableEffect('a', 11))
+        mult = mult.times(buyableEffect('a', 12))
+        mult = mult.times(buyableEffect('a', 21))
+        mult = mult.times(buyableEffect('a', 22))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -47,13 +51,13 @@ addLayer("a", {
                     "milestones"
                 ]
             },
-            //"Buyables": {
-            //    unlocked: () => hasUpgrade ('d', 25),
-            //    content: [
-            //        ["blank", "15px"],
-            //        "buyables",
-            //    ]
-            //},
+            "Buyables": {
+                unlocked: () => hasUpgrade ('f', 33),
+                content: [
+                    ["blank", "15px"],
+                    "buyables",
+                ]
+            },
         },
     },
     tabFormat: [
@@ -96,6 +100,14 @@ addLayer("a", {
             description: "Unlock new dob upgrades. Again.",
             cost: new Decimal(100000),
         },
+        21: {
+            title: "Bar?",
+            description: "Unlock new minigame layer.",
+            unlocked() {
+                return hasUpgrade('f', 33)
+            },
+            cost: new Decimal(2e167),
+        },
     },
     milestones: {
         1: {
@@ -132,18 +144,22 @@ addLayer("a", {
     buyables: {
         11: {
             cost(x) { 
-                return new Decimal(1e5).pow(1.1).pow(x).pow(0.5).add(1e5).times(x).add(1e5)
+                let base = new Decimal (2e27)
+                let grow = new Decimal(1e3).pow(x).pow(1.2)
+                cost = base*grow
+                return cost
             },
-            title: 'Materialize points',
+            title: 'Dematerialize points',
             display() {
-                return "Boost point gain" + '.<br>Amount: ' +
+                return "Nerf point gain and boost antimatter gain" + '.<br>Amount: ' +
                 format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
                 format(this.effect()) + '.<br>Costs: ' + 
                 format(this.cost()) + ' matter.'
             },
             effect() {
-                return new Decimal(10).pow(getBuyableAmount(this.layer, this.id))
+                return new Decimal(100).pow(getBuyableAmount(this.layer, this.id))
             },
+
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -155,17 +171,20 @@ addLayer("a", {
         },
         12: {
             cost(x) { 
-                return new Decimal(1.5e5).pow(1.5).pow(x).pow(0.5).add(1.5e5).times(x).add(1.5e5)
+                let base = new Decimal (1e29)
+                let grow = new Decimal(1e4).pow(x).pow(1.2)
+                cost = base*grow
+                return cost
             },
-            title: 'Materialize dob points',
+            title: 'Dematerialize dob points',
             display() {
-                return "Boost dob point gain" + '.<br>Amount: ' +
+                return "Nerf dob point gain and boost antimatter gain" + '.<br>Amount: ' +
                 format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
                 format(this.effect()) + '.<br>Costs: ' + 
                 format(this.cost()) + ' matter.'
             },
             effect() {
-                return new Decimal(5).pow(getBuyableAmount(this.layer, this.id))
+                return new Decimal(1e3).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
@@ -178,7 +197,10 @@ addLayer("a", {
         },
         13: {
             cost(x) { 
-                return new Decimal(1e5).mul(x) 
+                let base = 2e27
+                let grow = new Decimal(1e2).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
             title: 'Materialize points',
             display() {
@@ -204,18 +226,20 @@ addLayer("a", {
         },
         21: {
             cost(x) { 
-                if (hasUpgrade('m', 24)) return new Decimal(5e5).pow(2).pow(x).pow(0.5).add(5e5).times(x).add(5e5).divide(1e12)
-                return new Decimal(5e5).pow(2).pow(x).pow(0.5).add(5e5).times(x).add(5e5)
+                let base = new Decimal (2e70)
+                let grow = new Decimal(1e5).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
-            title: 'Materialize matter',
+            title: 'Dematerialize matter',
             display() {
-                return "Boost matter gain" + '.<br>Amount: ' +
+                return "Nerf matter gain and boost antimatter gain" + '.<br>Amount: ' +
                 format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
                 format(this.effect()) + '.<br>Costs: ' + 
                 format(this.cost()) + ' matter.'
             },
             effect() {
-                return new Decimal(2.5).pow(getBuyableAmount(this.layer, this.id))
+                return new Decimal(1e4).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
@@ -228,17 +252,20 @@ addLayer("a", {
         },
         22: {
             cost(x) { 
-                return new Decimal(1e6).pow(1.1).times(x).add(1e6)
+                let base = new Decimal(1e85)
+                let grow = new Decimal(1e6).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
-            title: 'Materialize formulars',
+            title: 'Dematerialize formulars',
             display() {
-                return "Boost formular gain" + '.<br>Amount: ' +
+                return "Nerf formular gain and boost antimatter gain" + '.<br>Amount: ' +
                 format(getBuyableAmount(this.layer, this.id)) + '.<br>Currently: x' +
                 format(this.effect()) + '.<br>Costs: ' + 
                 format(this.cost()) + ' matter.'
             },
             effect() {
-                return new Decimal(2).pow(getBuyableAmount(this.layer, this.id))
+                return new Decimal(1e5).pow(getBuyableAmount(this.layer, this.id))
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
@@ -251,7 +278,10 @@ addLayer("a", {
         },
         23: {
             cost(x) { 
-                return new Decimal(1e5).mul(x) 
+                let base = 2e27
+                let grow = new Decimal(1e2).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
             title: 'Materialize points',
             display() {
@@ -277,7 +307,10 @@ addLayer("a", {
         },
         31: {
             cost(x) { 
-                return new Decimal(1e5).mul(x) 
+                let base = 2e27
+                let grow = new Decimal(1e2).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
             title: 'Materialize points',
             display() {
@@ -303,7 +336,10 @@ addLayer("a", {
         },
         32: {
             cost(x) { 
-                return new Decimal(1e5).mul(x) 
+                let base = 2e27
+                let grow = new Decimal(1e2).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
             title: 'Materialize points',
             display() {
@@ -329,7 +365,10 @@ addLayer("a", {
         },
         33: {
             cost(x) { 
-                return new Decimal(1e5).mul(x) 
+                let base = 2e27
+                let grow = new Decimal(1e2).pow(x).pow(1.1)
+                cost = base*grow
+                return cost
             },
             title: 'Materialize points',
             display() {
