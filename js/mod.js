@@ -58,6 +58,8 @@ function getPointGen() {
 	gain = gain.times(buyableEffect('m', 11))
 	if (hasUpgrade('d', 31)) gain = gain.times(1e10)
 	if (hasUpgrade('a', 12)) gain = gain.pow(upgradeEffect('a', 12))
+	let aBuyableAntiEffect11 = new Decimal(1).sub(getBuyableAmount('a', 11).times(0.02))
+	gain = gain.pow(aBuyableAntiEffect11)
 	return gain
 }
 
