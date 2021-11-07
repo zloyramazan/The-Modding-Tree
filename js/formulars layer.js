@@ -20,6 +20,8 @@ addLayer("f", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         mult = mult.times(buyableEffect('m', 22))
+        let aBuyableAntiEffect22 = new Decimal(1).sub(getBuyableAmount('a', 22).times(0.02))
+        mult = mult.pow(aBuyableAntiEffect22)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
