@@ -26,6 +26,8 @@ addLayer("m", {
         if (hasUpgrade ('m', 24)) mult = mult.times (upgradeEffect ('m', 24))
         mult = mult.times(buyableEffect('m', 21))
         if (hasUpgrade('d', 33)) mult = mult.times(1e10)
+        let aBuyableAntiEffect21 = new Decimal(1).sub(getBuyableAmount('a', 21).times(0.02))
+        mult = mult.pow(aBuyableAntiEffect21)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -41,7 +43,7 @@ addLayer("m", {
     effectDescription() { return 'Multiplying your dob point gain by ' + format (tmp.m.effect) + "x" },
     layerShown() {return hasMilestone ('d', 3) || hasMilestone ('m', 1) || hasMilestone ('a', 1)},
     passiveGeneration() {
-        if (hasMilestone("a", 3)) return 0.1
+        if (hasMilestone("a", 4)) return 0.1
         if (hasUpgrade("a", 11)) return 1
         return 0
     },  
