@@ -25,6 +25,8 @@ addLayer("d", {
         if (hasMilestone('d', 2)) mult = mult.times(player.d.milestones.length)
         mult = mult.times(buyableEffect('m', 12))
         if (hasUpgrade('d', 32)) mult = mult.times(1e10)
+        let aBuyableAntiEffect12 = new Decimal(1).sub(getBuyableAmount('a', 12).times(0.02))
+        mult = mult.pow(aBuyableAntiEffect12)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
