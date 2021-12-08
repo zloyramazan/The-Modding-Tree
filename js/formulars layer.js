@@ -7,15 +7,15 @@ addLayer("f", {
 		points: new Decimal(0),
     }},
     resetsNothing: true,
-    color: "#AC06E5",
+    color: "#C432F4",
     requires: new Decimal(150), // Can be a function that takes requirement increases into account
     resource: "formulars", // Name of prestige currency
     baseResource: "dob points", // Name of resource prestige is based on
     baseAmount() {return player.d.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent() {
-        if (hasUpgrade('a', 14)) return exponent = 1
-        return exponent = 1.5
+        if (hasUpgrade('a', 14)) return exponent = new Decimal(1)
+        return exponent = new Decimal(1.5)
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
