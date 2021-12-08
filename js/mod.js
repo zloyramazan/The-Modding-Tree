@@ -3,7 +3,7 @@ let modInfo = {
 	id: "DobMod",
 	author: "dob",
 	pointsName: "points",
-	modFiles: ["dob layer.js", "tree.js", 'formulars layer.js', 'matter layer.js', 'antimatter layer.js'],
+	modFiles: ["dob layer.js", "tree.js", 'formulars layer.js', 'matter layer.js', 'antimatter layer.js', 'bar layer.js'],
 
 	discordName: "",
 	discordLink: "",
@@ -13,11 +13,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
-	name: "The start",
+	num: "0.1.0",
+	name: "The tree of dob",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+    <h3>v0.1.0</h3><br>
+        - Added a lot more layers.<br>
+        - Making progress on making this game fun.<br>
 	<h3>v0.0.1</h3><br>
 		- Added dob layer.<br>
 		- Added 3 upgrades to dob layer.`
@@ -29,7 +32,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
 
 function getStartPoints(){
-    return new Decimal(modInfo.initialStartPoints)
+    return new Decimal(0)
 }
 
 // Determines if it should show points/sec
